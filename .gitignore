@@ -1,4 +1,4 @@
 bundle.zip
 target
-libs
+libs/*.a
 include/*.h
