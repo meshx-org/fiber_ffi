@@ -1,0 +1,35 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: macos-14
+        steps:
+        - uses: actions/checkout@v4
+        - uses: dtolnay/rust-toolchain@stable
+        
+        - run: cargo install cargo-edit
+        - run: cargo install cargo-get
+
+        - run: cargo set-version --bump minor --locked
+        
+        - name: Commit files
+          run: |
+            git config --local user.email "test@test.com"
+            git config --local user.name "Test"
+            git commit -a -m "Add changes"
+            git tag $(cargo get package.version --pretty)
+      
+        - name: Push changes
+          uses: ad-m/github-push-action@master
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            branch: ${{ github.ref }}

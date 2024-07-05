@@ -22,6 +22,7 @@ jobs:
             toolchain: stable
             targets: aarch64-apple-darwin,x86_64-apple-darwin,aarch64-apple-ios,aarch64-apple-ios-sim,x86_64-apple-ios
         - run: brew install cbindgen
+        - run: cargo install cargo-release
         - run: make macos
         
         - name: Create binary framework
@@ -41,8 +42,8 @@ jobs:
           with:
             tag_name: ${{ github.ref }}
             release_name: Release ${{ github.ref }}
-            draft: false
-            prerelease: true
+            draft: true
+            prerelease: false
 
         -  name: Upload Release Asset
            id: upload-release-asset 
