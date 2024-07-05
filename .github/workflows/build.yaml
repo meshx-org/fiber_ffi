@@ -18,14 +18,16 @@ jobs:
           with:
             toolchain: stable
             targets: aarch64-apple-darwin,x86_64-apple-darwin,aarch64-apple-ios,aarch64-apple-ios-sim,x86_64-apple-ios
-        - run: cargo test --all-features
         - run: brew install cbindgen
-        - run: cargo build --release
         - run: make macos
-        - run: xcodebuild -create-xcframework \
-            -library libs/libmunchausen-macos.a \
-            -headers ./include/ \
+        
+        - name: Create binary framework
+          run: | 
+            xcodebuild -create-xcframework
+            -library libs/libmunchausen-macos.a
+            -headers ./include/
             -output Munchausen.xcframework
+
         - run: zip -r framework.zip Munchausen.xcframework
         
         - name: Create Release
