@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-    pod-lib-lint:
+    build:
         runs-on: macos-14
         steps:
         - uses: actions/checkout@v4
@@ -20,4 +20,5 @@ jobs:
             targets: aarch64-apple-darwin,x86_64-apple-darwin,aarch64-apple-ios,aarch64-apple-ios-sim,x86_64-apple-ios
         - run: cargo test --all-features
         - run: brew install cbindgen
+        - run: cargo build --release
         - run: make macos
