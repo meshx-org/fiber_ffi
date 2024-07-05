@@ -23,9 +23,9 @@ jobs:
         
         - name: Create binary framework
           run: | 
-            xcodebuild -create-xcframework
-            -library libs/libmunchausen-macos.a
-            -headers ./include/
+            xcodebuild -create-xcframework \
+            -library libs/libmunchausen-macos.a \
+            -headers ./include/ \
             -output Munchausen.xcframework
 
         - run: zip -r framework.zip Munchausen.xcframework
