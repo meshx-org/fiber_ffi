@@ -1,0 +1,7 @@
+[package]
+name = "munchausen"  
+version = "0.1.0"    
+authors = []
+
+[lib]
+crate-type = ["staticlib"]
