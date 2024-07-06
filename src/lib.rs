@@ -1,3 +1,21 @@
+use std::ffi;
+
+type Callback = unsafe extern "C" fn(data: *mut u8, len: usize) -> ffi::c_int;
+
+#[no_mangle]
+pub extern "C" fn test(cb: Option<Callback>) {
+    let mut vec = vec![];
+    vec.shrink_to_fit();
+    assert!(vec.len() == vec.capacity());
+
+    if let Some(cb) = cb {
+        let res = unsafe {
+             cb(vec.as_mut_ptr(), vec.len() as usize)
+        };
+        println!("{}", res)
+    }
+}
+
 #[no_mangle]
 pub extern "C" fn rust_munchausen_numbers() -> *mut [i32; 4] {
     // Pre-caching the power for all of the digits; 0⁰ is initially in the cache array.
