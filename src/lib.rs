@@ -4,12 +4,14 @@ type Callback = unsafe extern "C" fn(data: *mut u8, len: usize) -> ffi::c_int;
 
 #[no_mangle]
 pub extern "C" fn test(cb: Callback) {
-    let mut vec = vec![];
+    let mut vec = vec![1, 2, 3, 4];
     vec.shrink_to_fit();
     assert!(vec.len() == vec.capacity());
 
     let res = unsafe { cb(vec.as_mut_ptr(), vec.len() as usize) };
-    println!("{}", res)
+
+    println!("{:?}", cb);
+    println!("{}", res);
 }
 
 #[no_mangle]
