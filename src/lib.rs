@@ -212,6 +212,15 @@ pub extern "C" fn fx_handle_replace(
 }
 
 #[no_mangle]
+pub extern "C" fn fx_channel_create(
+    options: u32,
+    out0: *mut fx_handle_t,
+    out1: *mut fx_handle_t,
+) -> fx_status_t {
+    FX_OK
+}
+
+#[no_mangle]
 pub extern "C" fn fx_channel_read(
     handle: fx_handle_t,
     options: u32,
@@ -235,6 +244,18 @@ pub extern "C" fn fx_channel_read_etc(
     num_handles: u32,
     actual_bytes: *mut u32,
     actual_handles: *mut u32,
+) -> fx_status_t {
+    FX_OK
+}
+
+#[no_mangle]
+pub extern "C" fn fx_channel_write(
+    handle: fx_handle_t,
+    options: u32,
+    bytes: *const u8,
+    num_bytes: u32,
+    handles: *const fx_handle_t,
+    num_handles: u32,
 ) -> fx_status_t {
     FX_OK
 }
