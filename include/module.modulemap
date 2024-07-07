@@ -1,4 +1,4 @@
-module Munchausen {
-  header "munchausen.h"
+module FiberFFI {
+  header "fiber_ffi.h"
   export *
 }

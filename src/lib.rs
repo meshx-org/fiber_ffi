@@ -1,59 +1,73 @@
-use std::ffi;
+macro_rules! multiconst {
+    ($typename:ident, [$($(#[$attr:meta])* $rawname:ident = $value:expr;)*]) => {
+        $(
+            $(#[$attr])*
+            pub const $rawname: $typename = $value;
+        )*
+    }
+}
 
-type Callback = unsafe extern "C" fn(data: *mut u8, len: usize) -> ffi::c_int;
+#[allow(non_camel_case_types)]
+pub type fx_handle_t = u32;
+#[allow(non_camel_case_types)]
+pub type fx_status_t = i32;
+#[allow(non_camel_case_types)]
+pub type fx_obj_type_t = u32;
+#[allow(non_camel_case_types)]
+pub type fx_rights_t = u32;
+
+#[repr(C)]
+#[allow(non_camel_case_types)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub struct fx_handle_info_t {
+    pub handle: fx_handle_t,
+    pub ty: fx_obj_type_t,
+    pub rights: fx_rights_t,
+    pub unused: u32,
+}
+
+multiconst!(fx_status_t, [
+    FX_OK                         = 0;
+]);
+
+multiconst!(fx_obj_type_t, [
+    FX_OBJ_TYPE_NONE                = 0;
+    FX_OBJ_TYPE_PROCESS             = 1;
+    FX_OBJ_TYPE_CHANNEL             = 4;
+    FX_OBJ_TYPE_EVENT               = 5;
+    FX_OBJ_TYPE_PORT                = 6;
+    FX_OBJ_TYPE_JOB                 = 17;
+]);
 
 #[no_mangle]
-pub extern "C" fn test(cb: Callback) {
-    let mut vec = vec![1, 2, 3, 4];
-    vec.shrink_to_fit();
-    assert!(vec.len() == vec.capacity());
-
-    let res = unsafe { cb(vec.as_mut_ptr(), vec.len() as usize) };
-
-    println!("{:?}", cb);
-    println!("{}", res);
+pub extern "C" fn fx_port_create(options: u32, out: *mut fx_handle_t) -> fx_status_t {
+    FX_OK
 }
 
 #[no_mangle]
-pub extern "C" fn rust_munchausen_numbers() -> *mut [i32; 4] {
-    // Pre-caching the power for all of the digits; 0⁰ is initially in the cache array.
-    let mut cache = [0; 10];
-    let mut index = 0;
-    let mut munchausen_num: [i32; 4] = [0; 4];
-    let munchausen_num_ptr: *mut [i32; 4] = &mut munchausen_num;
-
-    for n in 1..=9 {
-        cache[n] = (n as i32).pow(n as u32);
-    }
-
-    // Searching for Munchausen numbers iterating through a long range containing all of them.
-    for n in 0..500000000 {
-        if is_munchausen_number(n, &cache) {
-            munchausen_num[index] = n;
-            index += 1;
-        }
-    }
-
-    munchausen_num_ptr
+pub extern "C" fn fx_channel_read(
+    handle: fx_handle_t,
+    options: u32,
+    bytes: *mut u8,
+    handles: *mut fx_handle_t,
+    num_bytes: u32,
+    num_handles: u32,
+    actual_bytes: *mut u32,
+    actual_handles: *mut u32,
+) -> fx_status_t {
+    FX_OK
 }
 
-fn is_munchausen_number(number: i32, cache: &[i32; 10]) -> bool {
-    let mut current_number = number;
-    let mut sum = 0;
-
-    // The calculation details: Do until we go through all of the digits.
-    while current_number > 0 {
-        // Take the last digit of a number.
-        let digit = current_number % 10;
-        // Add the cached power of the digit to the overall sum.
-        sum += cache[digit as usize];
-
-        if sum > number {
-            return false;
-        }
-        // "Cut" the last digit
-        current_number /= 10;
-    }
-
-    number == sum
+#[no_mangle]
+pub extern "C" fn fx_channel_read_etc(
+    handle: fx_handle_t,
+    options: u32,
+    bytes: *mut u8,
+    handles: *mut fx_handle_info_t,
+    num_bytes: u32,
+    num_handles: u32,
+    actual_bytes: *mut u32,
+    actual_handles: *mut u32,
+) -> fx_status_t {
+    FX_OK
 }

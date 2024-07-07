@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "munchausen"
-version = "0.10.0"
+name = "fiber_ffi"
+version = "0.12.0"

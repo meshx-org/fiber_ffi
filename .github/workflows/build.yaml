@@ -13,27 +13,40 @@ jobs:
         runs-on: macos-14
         steps:
         - uses: actions/checkout@v4
+        
         - uses: dtolnay/rust-toolchain@stable
           with:
             toolchain: stable
             targets: aarch64-apple-darwin,x86_64-apple-darwin,aarch64-apple-ios,aarch64-apple-ios-sim,x86_64-apple-ios
-        - run: brew install cbindgen
+        
+        - name: Install cbindgen
+          run: brew install cbindgen
 
-        - name: Run cargo build for each target
+        - name: Run cargo build for each macos target
           run: make macos
         
+        - name: Run cargo build for each ios target
+          run: make ios
+        
         - name: Generate header file
-          run: cbindgen --config cbindgen.toml --crate munchausen --output include/munchausen.h 
+          run: cbindgen --config cbindgen.toml --crate fiber_ffi --output include/fiber_ffi.h 
         
         - name: Create binary framework
           run: | 
             xcodebuild -create-xcframework \
-            -library libs/libmunchausen-macos.a \
+            -library libs/libfiber_ffi_macos.a \
             -headers ./include/ \
-            -output Munchausen.xcframework
+            -library libs/libfiber_ffi_ios_sim.a \
+            -headers ./include/ \
+            -library libs/libfiber_ffi_ios.a \
+            -headers ./include/ \
+            -output FiberFFI.xcframework
 
-        - run: zip -r framework.zip Munchausen.xcframework
-        - run: openssl dgst -sha256 framework.zip
+        - name: Create zipped framework
+          run: zip -r framework.zip FiberFFI.xcframework
+
+        - name: Generate checksum
+          run: openssl dgst -sha256 framework.zip
         
         - name: Create Release
           id: create_release
@@ -57,10 +70,10 @@ jobs:
              asset_name: framework.zip
              asset_content_type: application/zip
 
-        - name: Invoke workflow without inputs
-          uses: peter-evans/repository-dispatch@v3
-          with:
-            token: ${{ secrets.GITHUB_TOKEN }}
-            repository: szkabaroli/SwiftRusty
-            event-type: new-release
-            client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+        #- name: Invoke workflow without inputs
+        #  uses: peter-evans/repository-dispatch@v3
+        #  with:
+        #    token: ${{ secrets.GITHUB_TOKEN }}
+        #    repository: szkabaroli/SwiftRusty
+        #    event-type: new-release
+        #    client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
