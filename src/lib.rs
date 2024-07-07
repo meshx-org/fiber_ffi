@@ -3,17 +3,13 @@ use std::ffi;
 type Callback = unsafe extern "C" fn(data: *mut u8, len: usize) -> ffi::c_int;
 
 #[no_mangle]
-pub extern "C" fn test(cb: Option<Callback>) {
+pub extern "C" fn test(cb: Callback) {
     let mut vec = vec![];
     vec.shrink_to_fit();
     assert!(vec.len() == vec.capacity());
 
-    if let Some(cb) = cb {
-        let res = unsafe {
-             cb(vec.as_mut_ptr(), vec.len() as usize)
-        };
-        println!("{}", res)
-    }
+    let res = unsafe { cb(vec.as_mut_ptr(), vec.len() as usize) };
+    println!("{}", res)
 }
 
 #[no_mangle]
