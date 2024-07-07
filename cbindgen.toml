@@ -15,7 +15,7 @@ documentation_length = "full"
 documentation_style = "auto" 
 line_endings = "LF" # also "CR", "CRLF", "Native"
 line_length = 100 
-tab_width = 4 
+tab_width = 4
 
 # Whether to add a `#pragma once` guard
 # default: doesn't emit a `#pragma once`
@@ -50,6 +50,7 @@ crates = ["fiber_ffi"]
 allow_static_const = true
 
 [export]
+include=["fx_port_packet_t"]
 item_types = ["globals", "enums", "structs", "unions", "typedefs", "opaque", "functions", "constants"]
 
 [macro_expansion]
